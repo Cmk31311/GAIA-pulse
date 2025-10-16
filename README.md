@@ -28,7 +28,7 @@ An interactive Earth monitoring platform that transforms environmental data into
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      FRONTEND (Next.js 15)                       │
+│                      FRONTEND (Next.js 15)                      │
 │  • Interactive 3D Earth Globe (react-globe.gl)                  │
 │  • 22 Global Regions with color-coded categories                │
 │  • Real-time narrative display                                  │
@@ -38,7 +38,7 @@ An interactive Earth monitoring platform that transforms environmental data into
                       API Gateway
                              ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│                    AWS BACKEND PIPELINE                          │
+│                    AWS BACKEND PIPELINE                         │
 └─────────────────────────────────────────────────────────────────┘
 EventBridge (daily trigger)
         ↓
@@ -49,7 +49,7 @@ Step Functions State Machine
 │  - Fetch environmental signals                            │
 │  - Compute features & anomalies                           │
 │  - Write diary JSON to S3                                 │
-│  → Output: bucket, s3_key, region_id, features, events   │
+│  → Output: bucket, s3_key, region_id, features, events    │
 └───────────────────────────────────────────────────────────┘
         ↓
 ┌───────────────────────────────────────────────────────────┐
@@ -409,53 +409,6 @@ Both Lambdas use structured JSON logging:
 
 ---
 
-## 🔍 Troubleshooting
-
-### Problem: "Access Denied" to S3
-
-**Solution:** Verify Lambda IAM role has S3 permissions:
-```json
-{
-  "Effect": "Allow",
-  "Action": ["s3:PutObject", "s3:GetObject"],
-  "Resource": "arn:aws:s3:::gaia-code-diary-s3/*"
-}
-```
-
-### Problem: "Access Denied" to Bedrock
-
-**Solution:** Verify Lambda IAM role has Bedrock permissions:
-```json
-{
-  "Effect": "Allow",
-  "Action": ["bedrock:InvokeModel"],
-  "Resource": "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
-}
-```
-
-### Problem: Lambda Timeout
-
-**Solution:**
-- Increase timeout in Lambda configuration
-- Ingest: 30s should be sufficient
-- Narrative: 60s (Bedrock calls can be slow)
-
-### Problem: Bedrock "ValidationException"
-
-**Solution:** 
-- Verify `BEDROCK_MODEL_ID` environment variable
-- Ensure you have access to Claude 3 Sonnet in your region
-- Check AWS account has Bedrock model access enabled
-
-### Problem: "Cannot find module 'boto3'"
-
-**Solution:** Rebuild deployment package:
-```bash
-bash scripts/package.sh
-```
-
----
-
 ## 🌍 Frontend Technology Stack
 
 - **Framework**: Next.js 15 (React 19) with Turbopack
@@ -510,42 +463,6 @@ npm run start
 
 ---
 
-## 🎯 Next Steps
-
-### Production Enhancements
-
-1. **Real Data Sources**: Replace placeholder signals with real APIs:
-   - NASA Earth Observations
-   - NOAA Climate Data
-   - ESA Sentinel Hub
-   - OpenAQ for air quality
-
-2. **EventBridge Schedule**: Set up daily/hourly triggers:
-   ```bash
-   aws events put-rule \
-     --name gaia-daily-trigger \
-     --schedule-expression "cron(0 6 * * ? *)"
-   ```
-
-3. **SNS Alerts**: Add error notifications:
-   ```bash
-   aws sns create-topic --name gaia-pulse-alerts
-   ```
-
-4. **API Gateway**: Expose narratives via REST API ✅ (Partially implemented)
-
-5. **Web Dashboard**: ✅ **Completed** - Full interactive dashboard with 3D globe
-
-6. **Multi-Region Support**: Process multiple regions in parallel
-
-7. **Enhanced Features**:
-   - Time-series visualization
-   - Region comparison mode
-   - Download narratives as reports
-   - Social sharing functionality
-
----
-
 ## 📜 Guardrails & Ethics
 
 - ✅ Narratives **must** include *why* (data → explanation)
@@ -567,40 +484,6 @@ Contributions welcome! Please ensure:
 - All tests pass: `pytest`
 - Code is formatted: `black .`
 - Linting passes: `flake8`
-
----
-
-## 📞 Support
-
-### Backend Issues
-1. Check CloudWatch Logs for both Lambdas
-2. Verify IAM permissions
-3. Test Lambdas individually before running full pipeline
-4. Check S3 bucket for generated files
-
-### Frontend Issues
-1. Verify Node.js version (18+)
-2. Clear `.next/` cache and rebuild
-3. Check console for API connection errors
-4. Ensure `NEXT_PUBLIC_API_BASE` is set correctly
-
----
-
-## 🌟 Recent Updates
-
-### v2.0 - GAIA PULSE (Current)
-- ✅ Renamed from GAIA CODE to GAIA PULSE
-- ✅ Interactive 3D Earth Globe with 22 regions
-- ✅ Modern Earth-themed UI with advanced gradients
-- ✅ Vertical category legend with region counts
-- ✅ Enhanced hover effects and tooltips
-- ✅ Improved TypeScript types and performance
-- ✅ Comprehensive .gitignore configuration
-
-### v1.0 - GAIA CODE (Legacy)
-- AWS Lambda pipeline with Step Functions
-- AI narrative generation via Bedrock
-- S3-based diary system
 
 ---
 
