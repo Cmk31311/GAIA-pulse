@@ -57,49 +57,49 @@ const REGION_COORDINATES: RegionCoordinates[] = [
 // Enhanced category configuration with visual styling
 const CATEGORY_CONFIG: Record<Category, CategoryConfig> = {
   forest: { 
-    color: '#00ff88', 
+    color: '#00ffaa', // Bright emerald green
     bgColor: 'bg-green-500/20', 
     textColor: 'text-green-300',
     emoji: '🌳',
     label: 'Forest'
   },
   ocean: { 
-    color: '#00bfff', 
+    color: '#00d9ff', // Vibrant cyan
     bgColor: 'bg-blue-500/20', 
     textColor: 'text-blue-300',
     emoji: '🌊',
     label: 'Ocean'
   },
   desert: { 
-    color: '#ffa500', 
+    color: '#ffbb33', // Warm golden orange
     bgColor: 'bg-orange-500/20', 
     textColor: 'text-orange-300',
     emoji: '🏜️',
     label: 'Desert'
   },
   mountain: { 
-    color: '#8b4513', 
+    color: '#d4a574', // Light sandy brown
     bgColor: 'bg-amber-700/20', 
     textColor: 'text-amber-300',
     emoji: '⛰️',
     label: 'Mountain'
   },
   city: { 
-    color: '#ff6b6b', 
+    color: '#ff5757', // Bright neon red
     bgColor: 'bg-red-500/20', 
     textColor: 'text-red-300',
     emoji: '🏙️',
     label: 'City'
   },
   ice: { 
-    color: '#87ceeb', 
+    color: '#b3f0ff', // Bright ice blue
     bgColor: 'bg-cyan-400/20', 
     textColor: 'text-cyan-200',
     emoji: '❄️',
     label: 'Ice'
   },
   reef: { 
-    color: '#ff69b4', 
+    color: '#ff66cc', // Vibrant pink
     bgColor: 'bg-purple-500/20', 
     textColor: 'text-purple-300',
     emoji: '🪸',
