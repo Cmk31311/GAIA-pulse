@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
@@ -113,25 +113,15 @@ const getCategoryColor = (category: Category): string => {
 
 export default function EarthGlobe({ selectedRegion, onRegionClick }: EarthGlobeProps) {
   const globeEl = useRef<any>(null);
-  const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
 
-  // Memoize point data with enhanced visuals for selected region
-  const pointsData = useMemo(() => {
-    return REGION_COORDINATES.map(region => ({
-      ...region,
-      isSelected: region.id === selectedRegion,
-      isHovered: region.id === hoveredRegion
-    }));
-  }, [selectedRegion, hoveredRegion]);
-
-  // Rotate globe to selected region with smooth animation
+  // Rotate globe to selected region
   useEffect(() => {
-    if (globeEl.current && selectedRegion) {
+    if (globeEl.current) {
       const region = REGION_COORDINATES.find(r => r.id === selectedRegion);
       if (region) {
         globeEl.current.pointOfView(
-          { lat: region.lat, lng: region.lon, altitude: 1.8 },
-          1200
+          { lat: region.lat, lng: region.lon, altitude: 2 },
+          1000
         );
       }
     }
@@ -140,12 +130,8 @@ export default function EarthGlobe({ selectedRegion, onRegionClick }: EarthGlobe
   // Auto-rotate globe
   useEffect(() => {
     if (globeEl.current) {
-      const controls = globeEl.current.controls();
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.5;
-      controls.enableZoom = true;
-      controls.minDistance = 180;
-      controls.maxDistance = 500;
+      globeEl.current.controls().autoRotate = true;
+      globeEl.current.controls().autoRotateSpeed = 0.5;
     }
   }, []);
 
@@ -157,57 +143,45 @@ export default function EarthGlobe({ selectedRegion, onRegionClick }: EarthGlobe
         bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
         backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
         
-        // Markers for regions with enhanced visuals
-        labelsData={pointsData}
+        // Markers for regions
+        labelsData={REGION_COORDINATES}
         labelLat={(d: any) => d.lat}
         labelLng={(d: any) => d.lon}
         labelText={(d: any) => d.name}
-        labelSize={(d: any) => d.isSelected ? 1.8 : d.isHovered ? 1.5 : 1.2}
-        labelDotRadius={(d: any) => d.isSelected ? 0.9 : d.isHovered ? 0.8 : 0.6}
-        labelColor={(d: any) => d.isSelected ? '#ffffff' : getCategoryColor(d.category)}
+        labelSize={1.2}
+        labelDotRadius={0.6}
+        labelColor={(d: any) => getCategoryColor(d.category)}
         labelResolution={3}
         
-        // Points for regions with pulsing effect for selected
-        pointsData={pointsData}
+        // Points for regions
+        pointsData={REGION_COORDINATES}
         pointLat={(d: any) => d.lat}
         pointLng={(d: any) => d.lon}
-        pointColor={(d: any) => {
-          if (d.isSelected) return '#ffffff';
-          if (d.isHovered) return '#ffff00';
-          return getCategoryColor(d.category);
-        }}
-        pointAltitude={(d: any) => d.isSelected ? 0.03 : 0.01}
-        pointRadius={(d: any) => d.isSelected ? 0.8 : d.isHovered ? 0.7 : 0.5}
+        pointColor={(d: any) => getCategoryColor(d.category)}
+        pointAltitude={0.01}
+        pointRadius={0.5}
         
-        // Interaction handlers
+        // Click handler
         onLabelClick={(label: any) => {
           onRegionClick(label.id);
         }}
         onPointClick={(point: any) => {
           onRegionClick(point.id);
         }}
-        onLabelHover={(label: any) => {
-          setHoveredRegion(label ? label.id : null);
-          if (label) {
-            document.body.style.cursor = 'pointer';
-          } else {
-            document.body.style.cursor = 'default';
-          }
-        }}
         
-        // Enhanced atmosphere
+        // Settings
         atmosphereColor="lightskyblue"
         atmosphereAltitude={0.25}
       />
       
-      {/* Enhanced Legend with all categories */}
-      <div className="absolute top-4 left-4 bg-black/90 text-white px-4 py-3 rounded-xl backdrop-blur-md border border-gray-700 shadow-xl transition-all hover:bg-black/95">
+      {/* Legend with all categories */}
+      <div className="absolute top-4 left-4 bg-black/90 text-white px-4 py-3 rounded-xl backdrop-blur-md border border-gray-700 shadow-xl">
         <div className="flex items-center gap-2 mb-2">
-          <div className="text-lg animate-pulse">🌍</div>
+          <div className="text-lg">🌍</div>
           <p className="text-sm font-bold font-orbitron tracking-wide">Interactive Earth</p>
         </div>
         <p className="text-xs opacity-80 mb-3">
-          {REGION_COORDINATES.length} regions • Click to explore • Scroll to zoom
+          {REGION_COORDINATES.length} regions • Click to explore
         </p>
         <div className="flex flex-col gap-1.5">
           {(Object.keys(CATEGORY_CONFIG) as Category[]).map((category) => {
@@ -216,8 +190,7 @@ export default function EarthGlobe({ selectedRegion, onRegionClick }: EarthGlobe
             return (
               <span
                 key={category}
-                className={`px-2.5 py-1.5 ${config.bgColor} ${config.textColor} text-xs rounded-md font-medium 
-                  transition-all hover:scale-105 hover:shadow-lg cursor-default border border-gray-700/50 flex items-center gap-2`}
+                className={`px-2.5 py-1.5 ${config.bgColor} ${config.textColor} text-xs rounded-md font-medium border border-gray-700/50 flex items-center gap-2`}
                 title={`${count} ${config.label} region${count !== 1 ? 's' : ''}`}
               >
                 <span className="text-sm">{config.emoji}</span>
@@ -228,17 +201,6 @@ export default function EarthGlobe({ selectedRegion, onRegionClick }: EarthGlobe
           })}
         </div>
       </div>
-
-      {/* Hover tooltip for region info */}
-      {hoveredRegion && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/90 text-white px-4 py-2 rounded-lg backdrop-blur-md border border-gray-700 shadow-xl animate-fade-in">
-          <p className="text-sm font-semibold">
-            {REGION_COORDINATES.find(r => r.id === hoveredRegion)?.emoji}{' '}
-            {REGION_COORDINATES.find(r => r.id === hoveredRegion)?.name}
-          </p>
-          <p className="text-xs opacity-70">Click to view details</p>
-        </div>
-      )}
     </div>
   );
 }
