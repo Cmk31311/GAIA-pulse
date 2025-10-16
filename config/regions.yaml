@@ -1,0 +1,18 @@
+# Define region personas and which signals to use
+regions:
+  - id: reef_sumatra
+    name: "Coral Reef off Sumatra"
+    signals:
+      - name: sea_surface_temperature
+        provider: placeholder_sst
+      - name: chlorophyll_a
+        provider: placeholder_chl
+      - name: pm25_coastal
+        provider: placeholder_pm
+    thresholds:
+      heat_stress_c:
+        moderate: 0.8
+        high: 1.5
+      pm25_ug_m3:
+        moderate: 35
+        high: 55
