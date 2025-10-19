@@ -4,7 +4,7 @@
   "States": {
     "Ingest": {
       "Type": "Task",
-      "Resource": "arn:aws:lambda:us-east-1:346055375659:function:gaia-ingest-lambda",
+      "Resource": "arn:aws:lambda:us-east-1:your-aws-account-id:function:gaia-ingest-lambda",
       "ResultPath": "$.ingest",
       "Next": "GenerateNarrative",
       "Retry": [
@@ -25,7 +25,7 @@
     },
     "GenerateNarrative": {
       "Type": "Task",
-      "Resource": "arn:aws:lambda:us-east-1:346055375659:function:gaia-narrative-lambda",
+      "Resource": "arn:aws:lambda:us-east-1:your-aws-account-id:function:gaia-narrative-lambda",
       "Parameters": {
         "region_id.$": "$.region_id",
         "s3_bucket.$": "$.ingest.bucket",

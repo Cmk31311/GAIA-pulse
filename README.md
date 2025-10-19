@@ -95,13 +95,13 @@ s3://your-diary-bucket-name/
 - Fetches real-time data from Open-Meteo and NASA POWER APIs
 - Normalizes metrics (temperature, PM2.5, ozone, precipitation, solar irradiance)
 - Detects environmental events (heat stress, air quality spikes)
-- Saves to: `s3://gaia-pulse-diary-s3/diary/{region_id}/{timestamp}.json`
+- Saves to: `s3://your-diary-bucket-name/diary/{region_id}/{timestamp}.json`
 
 ### 2. **gaia-narrative-lambda**
 - Reads diary data from S3
 - Generates human-like narratives via Bedrock (Claude 3 Haiku)
 - Includes retry logic with exponential backoff
-- Saves to: `s3://gaia-pulse-diary-s3/diary/{region_id}/{timestamp}-narrative.json`
+- Saves to: `s3://your-diary-bucket-name/diary/{region_id}/{timestamp}-narrative.json`
 
 ### 3. **gaia-read-latest**
 - Public API endpoint: `/narrative?region_id={region_id}`
@@ -173,7 +173,7 @@ amazon_rainforest, andes_mountains, antarctica_coast, arabian_desert, arctic_cir
 
 **⚠️ Note for Hackathon:** This repository contains placeholder AWS resource identifiers for security. For a live demonstration of the fully functional system, please visit:
 
-🌐 **Live Demo**: [https://gaia-pulse-demo.vercel.app](https://gaia-pulse-demo.vercel.app)
+🌐 **Live Demo**: [https://gaia-pulse-3.vercel.app](https://gaia-pulse-3.vercel.app)
 
 The actual working system is deployed from our private repository with real AWS resources. In production environments, these should be:
 
@@ -315,7 +315,7 @@ aws lambda update-function-code \
 ```bash
 # Update state machine definition
 aws stepfunctions update-state-machine \
-  --state-machine-arn arn:aws:states:us-east-1:346055375659:stateMachine:gaia-code-pipeline \
+  --state-machine-arn arn:aws:states:us-east-1:your-aws-account-id:stateMachine:gaia-code-pipeline \
   --definition file://infra/state_machine.asl.json
 ```
 
@@ -434,10 +434,10 @@ Expected: Both diary.json and -narrative.json files in S3.
 
 | Function | ARN |
 |----------|-----|
-| **gaia-ingest-lambda** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-ingest-lambda` |
-| **gaia-narrative-lambda** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-narrative-lambda` |
-| **gaia-read-latest** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-read-latest` |
-| **gaia-repair** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-repair` |
+| **gaia-ingest-lambda** | `arn:aws:lambda:us-east-1:your-aws-account-id:function:gaia-ingest-lambda` |
+| **gaia-narrative-lambda** | `arn:aws:lambda:us-east-1:your-aws-account-id:function:gaia-narrative-lambda` |
+| **gaia-read-latest** | `arn:aws:lambda:us-east-1:your-aws-account-id:function:gaia-read-latest` |
+| **gaia-repair** | `arn:aws:lambda:us-east-1:your-aws-account-id:function:gaia-repair` |
 
 ---
 
