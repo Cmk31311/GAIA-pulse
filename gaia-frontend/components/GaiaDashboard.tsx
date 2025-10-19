@@ -6,6 +6,7 @@ import {
   fetchNarrative,
   AVAILABLE_REGIONS,
   formatTimestamp,
+  getTimestamp,
   getSeverityColor,
   formatMetricValue,
   formatMetricName,
@@ -300,7 +301,7 @@ export default function GaiaDashboard() {
               <div className="flex items-center justify-between text-sm text-gray-500 mt-6 pt-6 border-t border-gray-200">
                 <span className="flex items-center gap-2">
                   <span className="text-purple-500">📅</span>
-                  <span className="font-medium">{formatTimestamp(data.ts)}</span>
+                  <span className="font-medium">{formatTimestamp(getTimestamp(data))}</span>
                 </span>
                 {data.sources && Array.isArray(data.sources) && data.sources.length > 0 && (
                   <span className="flex items-center gap-2">

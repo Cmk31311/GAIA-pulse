@@ -19,7 +19,8 @@ export const API_TIMEOUT = parseInt(
 export interface NarrativeResponse {
   narrative: string;
   confidence: number;
-  ts: string;
+  ts?: string | null;
+  timestamp_utc?: string;
   region_id?: string;
   _region_id?: string;
   _bucket?: string;
@@ -156,6 +157,13 @@ export const AVAILABLE_REGIONS = [
   { id: 'sahara_desert', name: 'Sahara Desert', emoji: '🐪' },
   { id: 'tokyo_japan', name: 'Tokyo (Japan)', emoji: '🗼' },
 ] as const;
+
+/**
+ * Get timestamp from response (handles both ts and timestamp_utc fields)
+ */
+export function getTimestamp(data: NarrativeResponse): string | null | undefined {
+  return data.timestamp_utc || data.ts;
+}
 
 /**
  * Format timestamp for display
