@@ -7,7 +7,7 @@ import os
 import pytest
 from moto import mock_aws
 import boto3
-from datetime import datetime, timezone
+# Removed datetime imports - no timestamp functionality
 
 # Set test environment variables
 os.environ["DIARY_BUCKET"] = "your-test-bucket-name"
@@ -27,7 +27,7 @@ def test_narrative_lambda_loads_diary():
     # Create test diary
     diary = {
         "region_id": "reef_sumatra",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "id": "test-id-123",
         "features": {
             "sst_anomaly_c": 1.8,
             "chlorophyll_mg_m3": 0.3,
@@ -67,7 +67,7 @@ def test_narrative_output_structure():
     # Create mock narrative output
     narrative_obj = {
         "region_id": "reef_sumatra",
-        "ts": datetime.now(timezone.utc).isoformat(),
+        "id": "test-id-123",
         "narrative": "I am the reef off Sumatra. Warm currents press on me.",
         "confidence": 0.85,
         "source_diary_key": "diary/reef_sumatra/test.json"
@@ -124,10 +124,10 @@ def test_narrative_key_naming():
     s3.create_bucket(Bucket="test-gaia-bucket")
     
     # Original diary key
-    diary_key = "diary/reef_sumatra/2025-10-12T05-41-23-299611Z.json"
+    diary_key = "diary/reef_sumatra/{id}.json"
     
     # Expected narrative key
-    expected_narrative_key = "diary/reef_sumatra/2025-10-12T05-41-23-299611Z-narrative.json"
+    expected_narrative_key = "diary/reef_sumatra/{id}-narrative.json"
     
     # Test the replacement logic
     narrative_key = diary_key.replace(".json", "-narrative.json")

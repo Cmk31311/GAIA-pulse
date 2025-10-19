@@ -1,7 +1,7 @@
 import json
 import os
 import random
-from datetime import datetime, timezone
+import time
 from typing import Dict, Any
 
 import boto3
@@ -13,7 +13,7 @@ s3 = boto3.client("s3")
 def fetch_signals(region_id: str) -> Dict[str, Any]:
     """Fetch environmental signals. Replace with real APIs (NASA/ESA/NOAA, etc.)."""
     return {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "id": f"{region_id}-{int(time.time() * 1000)}",
         "region_id": region_id,
         "sst_c": 28.0 + random.uniform(-0.5, 1.8),
         "sst_clim_c": 27.2,
@@ -48,11 +48,11 @@ def compute_features(signals: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def create_diary_object(region_id: str, timestamp: str, features: Dict[str, Any]) -> Dict[str, Any]:
+def create_diary_object(region_id: str, id: str, features: Dict[str, Any]) -> Dict[str, Any]:
     """Create the diary JSON structure."""
     return {
         "region_id": region_id,
-        "timestamp": timestamp,
+        "id": id,
         "features": features["features"],
         "events": features["events"],
         "narrative": None,
@@ -67,8 +67,8 @@ def create_diary_object(region_id: str, timestamp: str, features: Dict[str, Any]
 
 def persist_to_s3(obj: Dict[str, Any], key_prefix: str = "diary") -> str:
     """Write diary object to S3."""
-    timestamp_safe = obj['timestamp'].replace(':', '-').replace('.', '-')
-    key = f"{key_prefix}/{obj['region_id']}/{timestamp_safe}.json"
+    id_safe = obj['id'].replace(':', '-').replace('.', '-')
+    key = f"{key_prefix}/{obj['region_id']}/{id_safe}.json"
     
     s3.put_object(
         Bucket=DIARY_BUCKET,
@@ -104,13 +104,13 @@ def lambda_handler(event, context):
     try:
         # Extract region_id
         region_id = event.get("region_id", "reef_sumatra")
-        timestamp = datetime.now(timezone.utc).isoformat()
+        id = f"{region_id}-{int(time.time() * 1000)}"
         
         # Log start
         print(json.dumps({
             "stage": "start",
             "region_id": region_id,
-            "timestamp": timestamp,
+            "id": id,
             "bucket": DIARY_BUCKET
         }))
         
@@ -121,7 +121,7 @@ def lambda_handler(event, context):
         computed = compute_features(signals)
         
         # Create diary object
-        diary = create_diary_object(region_id, timestamp, computed)
+        diary = create_diary_object(region_id, id, computed)
         
         # Persist to S3
         s3_key = persist_to_s3(diary)

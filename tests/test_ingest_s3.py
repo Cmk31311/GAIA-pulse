@@ -41,7 +41,7 @@ def test_lambda_handler_success():
     diary = json.loads(obj["Body"].read())
     
     assert diary["region_id"] == "reef_sumatra"
-    assert "timestamp" in diary
+    assert "id" in diary
     assert "features" in diary
     assert "events" in diary
 
@@ -65,7 +65,7 @@ def test_fetch_signals():
     signals = fetch_signals("reef_sumatra")
     
     assert signals["region_id"] == "reef_sumatra"
-    assert "timestamp" in signals
+    assert "id" in signals
     assert "sst_c" in signals
     assert "sst_clim_c" in signals
     assert "chlorophyll_mg_m3" in signals
@@ -144,7 +144,7 @@ def test_diary_json_structure():
     
     # Required fields
     assert "region_id" in diary
-    assert "timestamp" in diary
+    assert "id" in diary
     assert "features" in diary
     assert "events" in diary
     assert "narrative" in diary

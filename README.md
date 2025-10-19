@@ -71,8 +71,8 @@ EventBridge (nightly) → Lambda (gaia-repair)
 **S3 Structure:**
 ```
 s3://your-diary-bucket-name/
-  diary/{region_id}/{timestamp}.json
-  diary/{region_id}/{timestamp}-narrative.json
+  diary/{region_id}/{id}.json
+  diary/{region_id}/{id}-narrative.json
 ```
 
 ---
@@ -98,13 +98,13 @@ s3://your-diary-bucket-name/
 - Fetches real-time data from Open-Meteo and NASA POWER APIs
 - Normalizes metrics (temperature, PM2.5, ozone, precipitation, solar irradiance)
 - Detects environmental events (heat stress, air quality spikes)
-- Saves to: `s3://your-diary-bucket-name/diary/{region_id}/{timestamp}.json`
+- Saves to: `s3://your-diary-bucket-name/diary/{region_id}/{id}.json`
 
 ### 2. **gaia-narrative-lambda**
 - Reads diary data from S3
 - Generates human-like narratives via Bedrock (Claude 3 Haiku)
 - Includes retry logic with exponential backoff
-- Saves to: `s3://your-diary-bucket-name/diary/{region_id}/{timestamp}-narrative.json`
+- Saves to: `s3://your-diary-bucket-name/diary/{region_id}/{id}-narrative.json`
 
 ### 3. **gaia-read-latest**
 - Public API endpoint: `/narrative?region_id={region_id}`
@@ -364,7 +364,7 @@ Expected output:
 {
   "status": "ok",
   "bucket": "gaia-code-diary-s3",
-  "s3_key": "diary/reef_sumatra/2025-10-12T05-41-23-299611Z.json",
+  "s3_key": "diary/reef_sumatra/{id}.json",
   "region_id": "reef_sumatra",
   "features": {
     "sst_anomaly_c": 1.7,
@@ -388,12 +388,12 @@ Expected: Both diary.json and -narrative.json files in S3.
 
 ## 📊 Data Contract
 
-### Diary Object (`diary/{region_id}/{timestamp}.json`)
+### Diary Object (`diary/{region_id}/{id}.json`)
 
 ```json
 {
   "region_id": "reef_sumatra",
-  "timestamp": "2025-10-12T05:41:23.299611Z",
+  "id": "{id}",
   "features": {
     "sst_anomaly_c": 1.8,
     "chlorophyll_mg_m3": 0.22,
@@ -419,15 +419,15 @@ Expected: Both diary.json and -narrative.json files in S3.
 }
 ```
 
-### Narrative Object (`diary/{region_id}/{timestamp}-narrative.json`)
+### Narrative Object (`diary/{region_id}/{id}-narrative.json`)
 
 ```json
 {
   "region_id": "reef_sumatra",
-  "ts": "2025-10-12T05:42:15.123456Z",
+  "id": "{id}",
   "narrative": "I am the reef off Sumatra. Heat presses on me because SST anomaly is 1.8°C; the air from the coast is harsh because PM2.5 is 60 µg/m³.",
   "confidence": 0.9,
-  "source_diary_key": "diary/reef_sumatra/2025-10-12T05-41-23-299611Z.json"
+  "source_diary_key": "diary/reef_sumatra/{id}.json"
 }
 ```
 
@@ -462,7 +462,7 @@ curl "https://your-api-gateway-id.execute-api.us-east-1.amazonaws.com/narrative?
 ```json
 {
   "region_id": "los_angeles",
-  "timestamp_utc": "2025-10-18T23:24:36+00:00",
+  "id": "{id}",
   "narrative": "I am the voice of Earth...",
   "features": {
     "air_temperature_2m_celsius": 29.1,
