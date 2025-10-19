@@ -6,7 +6,7 @@ from typing import Dict, Any
 
 import boto3
 
-DIARY_BUCKET = os.environ.get("DIARY_BUCKET", "gaia-code-diary-s3")
+DIARY_BUCKET = os.environ.get("DIARY_BUCKET", "your-diary-bucket-name")
 s3 = boto3.client("s3")
 
 

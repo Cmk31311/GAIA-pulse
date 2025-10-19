@@ -6,10 +6,10 @@ import os
 
 # AWS Settings
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
-AWS_ACCOUNT_ID = os.environ.get("AWS_ACCOUNT_ID", "346055375659")
+AWS_ACCOUNT_ID = os.environ.get("AWS_ACCOUNT_ID", "your-aws-account-id")
 
 # S3 Settings
-DIARY_BUCKET = os.environ.get("DIARY_BUCKET", "gaia-code-diary-s3")
+DIARY_BUCKET = os.environ.get("DIARY_BUCKET", "your-diary-bucket-name")
 
 # Bedrock Settings
 BEDROCK_MODEL_ID = os.environ.get(

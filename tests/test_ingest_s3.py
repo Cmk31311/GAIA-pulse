@@ -9,7 +9,7 @@ from moto import mock_aws
 import boto3
 
 # Set test environment variables
-os.environ["DIARY_BUCKET"] = "test-gaia-bucket"
+os.environ["DIARY_BUCKET"] = "your-test-bucket-name"
 os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
 # Import after setting env vars

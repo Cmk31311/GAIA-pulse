@@ -10,7 +10,7 @@ import boto3
 from datetime import datetime, timezone
 
 # Set test environment variables
-os.environ["DIARY_BUCKET"] = "test-gaia-bucket"
+os.environ["DIARY_BUCKET"] = "your-test-bucket-name"
 os.environ["AWS_REGION"] = "us-east-1"
 os.environ["BEDROCK_MODEL_ID"] = "anthropic.claude-3-sonnet-20240229-v1:0"
 

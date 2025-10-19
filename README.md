@@ -67,7 +67,7 @@ EventBridge (nightly) → Lambda (gaia-repair)
 
 **S3 Structure:**
 ```
-s3://gaia-pulse-diary-s3/
+s3://your-diary-bucket-name/
   diary/{region_id}/{timestamp}.json
   diary/{region_id}/{timestamp}-narrative.json
 ```
@@ -169,6 +169,19 @@ amazon_rainforest, andes_mountains, antarctica_coast, arabian_desert, arctic_cir
 
 ---
 
+## 🔒 Security Considerations
+
+**⚠️ Note for Hackathon:** This repository contains placeholder AWS resource identifiers for security. For a live demonstration of the fully functional system, please visit:
+
+🌐 **Live Demo**: [https://gaia-pulse-demo.vercel.app](https://gaia-pulse-demo.vercel.app)
+
+The actual working system is deployed from our private repository with real AWS resources. In production environments, these should be:
+
+- Stored as environment variables
+- Kept in private repositories  
+- Managed through secure configuration systems
+- Protected by proper IAM permissions
+
 ## 🚀 Quick Start
 
 ## 🌐 Frontend Setup (Recommended for Visualization)
@@ -240,8 +253,8 @@ Copy the environment template:
 # Create .env file (note: this file may be in .gitignore)
 cat > .env << EOF
 AWS_REGION=us-east-1
-AWS_ACCOUNT_ID=346055375659
-DIARY_BUCKET=gaia-code-diary-s3
+AWS_ACCOUNT_ID=your-aws-account-id
+DIARY_BUCKET=your-diary-bucket-name
 BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0
 EOF
 ```
@@ -268,7 +281,7 @@ This creates:
 1. Go to Lambda Console → `gaia-ingest-lambda`
 2. Upload `dist/ingest.zip`
 3. Set environment variables:
-   - `DIARY_BUCKET=gaia-code-diary-s3`
+   - `DIARY_BUCKET=your-diary-bucket-name`
 4. Set timeout: **30 seconds**
 5. Ensure IAM role has S3 write permissions
 
@@ -327,7 +340,7 @@ pytest tests/test_ingest_s3.py -v
 
 ```bash
 # Set test environment
-export DIARY_BUCKET=test-gaia-bucket
+export DIARY_BUCKET=your-test-bucket-name
 export AWS_REGION=us-east-1
 
 # Run tests with moto (mocks AWS services)
@@ -430,7 +443,7 @@ Expected: Both diary.json and -narrative.json files in S3.
 
 ## 🔌 API Endpoint
 
-**Base URL:** `https://yy7g8joeug.execute-api.us-east-1.amazonaws.com`
+**Base URL:** `https://your-api-gateway-id.execute-api.us-east-1.amazonaws.com`
 
 **Get Narrative:**
 ```
@@ -439,7 +452,7 @@ GET /narrative?region_id=<region_id>
 
 **Example:**
 ```bash
-curl "https://yy7g8joeug.execute-api.us-east-1.amazonaws.com/narrative?region_id=los_angeles"
+curl "https://your-api-gateway-id.execute-api.us-east-1.amazonaws.com/narrative?region_id=los_angeles"
 ```
 
 **Response:**
@@ -475,7 +488,7 @@ curl "https://yy7g8joeug.execute-api.us-east-1.amazonaws.com/narrative?region_id
 ### All Lambdas
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DIARY_BUCKET` | `gaia-pulse-diary-s3` | S3 bucket for diary files |
+| `DIARY_BUCKET` | `your-diary-bucket-name` | S3 bucket for diary files |
 
 ### Narrative Lambda
 | Variable | Default | Description |
@@ -593,8 +606,8 @@ npm run start
 - Handler: `handler.lambda_handler`
 
 ### Test the API
-```bash
-curl "https://yy7g8joeug.execute-api.us-east-1.amazonaws.com/narrative?region_id=los_angeles"
+   ```bash
+curl "https://your-api-gateway-id.execute-api.us-east-1.amazonaws.com/narrative?region_id=los_angeles"
 ```
 
 ---
