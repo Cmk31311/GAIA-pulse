@@ -26,7 +26,7 @@ An interactive Earth monitoring platform that transforms environmental data into
 
 ## 🏗️ Architecture
 
-<img width="885" height="606" alt="image" src="https://github.com/user-attachments/assets/69fa8e0a-79e2-4a65-9fd2-6ec967fd1d2d" />
+<img width="885" height="606" alt="image" src="https://github.com/user-attachments/assets/56e0c8c9-f534-477b-9386-fd9385fd1253" />
 
 
 
