@@ -12,60 +12,112 @@ An interactive Earth monitoring platform that transforms environmental data into
 
 🌍 **Interactive 3D Globe** - Explore 22 regions across forests, oceans, deserts, mountains, cities, ice caps, and coral reefs
 
-🤖 **AI-Powered Narratives** - Claude 3 Sonnet generates first-person environmental stories from real data
+🤖 **AI-Powered Narratives** - Claude 3 Haiku generates first-person environmental stories from real data
 
-📊 **Real-Time Data** - Live environmental metrics (SST anomalies, chlorophyll, air quality)
+📊 **Real-Time Data** - Live environmental metrics from Open-Meteo and NASA POWER APIs
 
 🎨 **Modern UI/UX** - Advanced Earth-themed design with glassmorphic effects and smooth animations
 
-☁️ **AWS Serverless** - Production-ready Lambda pipeline with Step Functions orchestration
+☁️ **AWS Serverless** - Fully autonomous pipeline with auto-healing capabilities
 
-📈 **Confidence Scoring** - Every narrative includes data provenance and confidence metrics
+🔄 **Self-Healing** - Automated repair system ensures data completeness
 
 ---
 
 ## 🏗️ Architecture
 
+![Architecture Diagram](architecture-diagram.png)
+
+### Frontend & API
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      FRONTEND (Next.js 15)                      │
-│  • Interactive 3D Earth Globe (react-globe.gl)                  │
-│  • 22 Global Regions with color-coded categories                │
-│  • Real-time narrative display                                  │
-│  • Modern, responsive UI with advanced Earth-themed design      │
-└────────────────────────────┬────────────────────────────────────┘
-                             ↓
-                      API Gateway
-                             ↓
-┌─────────────────────────────────────────────────────────────────┐
-│                    AWS BACKEND PIPELINE                         │
-└─────────────────────────────────────────────────────────────────┘
-EventBridge (daily trigger)
-        ↓
-Step Functions State Machine
-        ↓
-┌───────────────────────────────────────────────────────────┐
-│  INGEST LAMBDA                                            │
-│  - Fetch environmental signals                            │
-│  - Compute features & anomalies                           │
-│  - Write diary JSON to S3                                 │
-│  → Output: bucket, s3_key, region_id, features, events    │
-└───────────────────────────────────────────────────────────┘
-        ↓
-┌───────────────────────────────────────────────────────────┐
-│  NARRATIVE LAMBDA                                         │
-│  - Read diary from S3                                     │
-│  - Generate narrative via Bedrock (Claude 3 Sonnet)       │
-│  - Write -narrative.json companion file                   │
-│  → Output: narrative_key, narrative, confidence           │
-└───────────────────────────────────────────────────────────┘
-        ↓
-S3 Bucket: gaia-code-diary-s3
+User → Vercel (Next.js)
+Next.js → Three.js (3D Globe)
+Next.js → API Gateway
+API Gateway → Lambda (gaia-read-latest)
+```
+
+### Automation & Orchestration
+```
+EventBridge (daily) → Step Functions
+```
+
+### Compute & Intelligence
+```
+Step Functions → Lambda (gaia-ingest-lambda)
+gaia-ingest-lambda → External APIs (Open-Meteo, NASA POWER)
+gaia-ingest-lambda → Lambda (gaia-narrative-lambda)
+gaia-narrative-lambda → Amazon Bedrock (Claude 3 Haiku)
+```
+
+### Data Storage
+```
+gaia-ingest-lambda → S3 (diary files)
+gaia-narrative-lambda → S3 (narrative files)
+gaia-read-latest → S3 (reads latest)
+```
+
+### Monitoring & Self-Healing
+```
+All Lambdas → CloudWatch
+CloudWatch → SNS (alerts)
+EventBridge (nightly) → Lambda (gaia-repair)
+```
+
+**S3 Structure:**
+```
+s3://gaia-pulse-diary-s3/
   diary/{region_id}/{timestamp}.json
   diary/{region_id}/{timestamp}-narrative.json
-        ↓
-CloudWatch Logs / SNS Alerts
 ```
+
+---
+
+## ⚙️ AWS Services
+
+| Service | Purpose |
+|---------|---------|
+| **Amazon Bedrock (Claude 3 Haiku)** | AI narrative generation |
+| **AWS Lambda** | Serverless compute (4 functions) |
+| **AWS Step Functions** | Daily orchestration for 22 regions |
+| **Amazon EventBridge** | Automated daily/nightly triggers |
+| **Amazon S3** | Earth diary storage |
+| **Amazon CloudWatch** | Logging and monitoring |
+| **Amazon SNS** | Email alerts (optional) |
+| **API Gateway** | Public API endpoint |
+
+---
+
+## 🔧 Lambda Functions
+
+### 1. **gaia-ingest-lambda**
+- Fetches real-time data from Open-Meteo and NASA POWER APIs
+- Normalizes metrics (temperature, PM2.5, ozone, precipitation, solar irradiance)
+- Detects environmental events (heat stress, air quality spikes)
+- Saves to: `s3://gaia-pulse-diary-s3/diary/{region_id}/{timestamp}.json`
+
+### 2. **gaia-narrative-lambda**
+- Reads diary data from S3
+- Generates human-like narratives via Bedrock (Claude 3 Haiku)
+- Includes retry logic with exponential backoff
+- Saves to: `s3://gaia-pulse-diary-s3/diary/{region_id}/{timestamp}-narrative.json`
+
+### 3. **gaia-read-latest**
+- Public API endpoint: `/narrative?region_id={region_id}`
+- Returns most recent narrative for any region
+- Handles CORS for browser access
+- Powers the frontend dashboard
+
+### 4. **gaia-repair**
+- Nightly self-healing process
+- Scans S3 for incomplete regions
+- Re-triggers narrative generation if needed
+- Ensures data completeness
+
+---
+
+## 🌍 Supported Regions (22)
+
+amazon_rainforest, andes_mountains, antarctica_coast, arabian_desert, arctic_circle, bay_of_bengal, beijing, borneo_rainforest, congo_basin, delhi_india, gobi_desert, great_barrier_reef, greenland_ice_sheet, gulf_of_mexico, himalayas, los_angeles, maldives_atolls, new_york_city, philippines_archipelago, reef_sumatra, sahara_desert, tokyo_japan
 
 ---
 
@@ -188,7 +240,7 @@ cat > .env << EOF
 AWS_REGION=us-east-1
 AWS_ACCOUNT_ID=346055375659
 DIARY_BUCKET=gaia-code-diary-s3
-BEDROCK_MODEL_ID=anthropic.claude-3-sonnet-20240229-v1:0
+BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0
 EOF
 ```
 
@@ -222,7 +274,7 @@ This creates:
 1. Go to Lambda Console → `gaia-narrative-lambda`
 2. Upload `dist/narrative.zip`
 3. Set environment variables:
-   - `BEDROCK_MODEL_ID=anthropic.claude-3-sonnet-20240229-v1:0`
+   - `BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0`
    - `AWS_REGION=us-east-1`
 4. Set timeout: **60 seconds**
 5. Ensure IAM role has:
@@ -363,49 +415,106 @@ Expected: Both diary.json and -narrative.json files in S3.
 
 ---
 
-## 🔧 Current Lambda ARNs
+## 🔧 Lambda Functions (ARNs)
 
 | Function | ARN |
 |----------|-----|
-| **Ingest** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-ingest-lambda` |
-| **Narrative** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-narrative-lambda` |
+| **gaia-ingest-lambda** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-ingest-lambda` |
+| **gaia-narrative-lambda** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-narrative-lambda` |
+| **gaia-read-latest** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-read-latest` |
+| **gaia-repair** | `arn:aws:lambda:us-east-1:346055375659:function:gaia-repair` |
+
+---
+
+## 🔌 API Endpoint
+
+**Base URL:** `https://yy7g8joeug.execute-api.us-east-1.amazonaws.com`
+
+**Get Narrative:**
+```
+GET /narrative?region_id=<region_id>
+```
+
+**Example:**
+```bash
+curl "https://yy7g8joeug.execute-api.us-east-1.amazonaws.com/narrative?region_id=los_angeles"
+```
+
+**Response:**
+```json
+{
+  "region_id": "los_angeles",
+  "timestamp_utc": "2025-10-18T23:24:36+00:00",
+  "narrative": "I am the voice of Earth...",
+  "features": {
+    "air_temperature_2m_celsius": 29.1,
+    "particulate_matter_pm2_5_micrograms_per_m3": 17.0,
+    "solar_irradiance_watts_per_m2": 510
+  },
+  "events": []
+}
+```
+
+---
+
+## 🔐 IAM Permissions
+
+| Lambda | Required Permissions |
+|--------|---------------------|
+| **gaia-ingest-lambda** | `s3:PutObject`, `logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents` |
+| **gaia-narrative-lambda** | `bedrock:InvokeModel`, `aws-marketplace:ViewSubscriptions`, `s3:PutObject`, `s3:GetObject`, `logs:*` |
+| **gaia-read-latest** | `s3:ListBucket`, `s3:GetObject`, `logs:*` |
+| **gaia-repair** | `s3:ListBucket`, `s3:GetObject`, `lambda:InvokeFunction`, `logs:*` |
 
 ---
 
 ## ⚙️ Environment Variables
 
-### Ingest Lambda
+### All Lambdas
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DIARY_BUCKET` | `gaia-code-diary-s3` | S3 bucket for diary files |
+| `DIARY_BUCKET` | `gaia-pulse-diary-s3` | S3 bucket for diary files |
 
 ### Narrative Lambda
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `BEDROCK_MODEL_ID` | `anthropic.claude-3-sonnet-20240229-v1:0` | Bedrock model ID |
-| `AWS_REGION` | `us-east-1` | AWS region |
+| `BEDROCK_MODEL_ID` | `anthropic.claude-3-haiku-20240307-v1:0` | Claude 3 Haiku model ID |
+| `AWS_REGION` | `us-east-1` | AWS region for Bedrock |
+
+### Repair Lambda
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NARRATIVE_FUNCTION` | `gaia-narrative-lambda` | Name of narrative Lambda to invoke |
 
 ---
 
 ## 🛡️ Logging & Monitoring
 
-### CloudWatch Logs
+### CloudWatch Log Groups
+- `/aws/lambda/gaia-ingest-lambda`
+- `/aws/lambda/gaia-narrative-lambda`
+- `/aws/lambda/gaia-read-latest`
+- `/aws/lambda/gaia-repair`
 
-Both Lambdas use structured JSON logging:
-
-```json
-{"stage": "start", "region_id": "reef_sumatra", "timestamp": "2025-10-12T05:41:23Z"}
-{"stage": "loading_diary", "key": "diary/reef_sumatra/..."}
-{"stage": "complete", "s3_key": "...", "events_count": 2}
-{"stage": "error", "error_type": "KeyError", "error": "..."}
-```
+### CloudWatch Alarms
+- Alert when narrative Lambda `ErrorRate > 5%`
+- Optional SNS email notifications
 
 ### Error Handling
+- **Retry Logic**: Narrative Lambda has exponential backoff
+- **Idempotence**: Skips if narrative file already exists
+- **Step Functions**: Retries failed tasks automatically
+- **Self-Healing**: gaia-repair re-triggers missing narratives nightly
 
-- **Retry Logic**: Step Functions retries failed tasks (3x for Ingest, 2x for Narrative)
-- **Catch Blocks**: Errors are captured and routed to `FailState`
-- **Idempotence**: Both Lambdas can safely reprocess same input
-- **Timeouts**: Ingest=30s, Narrative=60s
+---
+
+## 🔄 Automation Schedule
+
+| Process | Trigger | Description |
+|---------|---------|-------------|
+| **Main Workflow** (Ingest + Narrative) | EventBridge - Daily | Fetches and generates data for all 22 regions |
+| **Repair Sweep** | EventBridge - Nightly | Ensures every region has complete narratives |
+| **Frontend Refresh** | API call - Real-time | Displays latest narrative via `/narrative` API |
 
 ---
 
@@ -454,45 +563,52 @@ vercel
 npm run build
 npm run start
 ```
+---
 
-### Frontend Deployment (Other Platforms)
+## 🧩 System Summary
 
-- **Netlify**: Connect GitHub repo and deploy
-- **AWS Amplify**: Automated CI/CD from repository
-- **Docker**: Build container with `next start`
+**GAIA PULSE** is a fully autonomous AI agent giving Earth a voice:
+
+- ✅ **Serverless Architecture** - Auto-scales with AWS Lambda, no manual servers
+- ✅ **Autonomous Operation** - Self-runs daily; self-heals missing narratives
+- ✅ **AI-Driven** - Uses Bedrock Claude 3 Haiku to humanize environmental data
+- ✅ **Accessible** - Single unified API endpoint for all regions
+- ✅ **Monitored** - CloudWatch logs and alerts maintain visibility
+- ✅ **Real-time** - Frontend displays live data from 22 global regions
+
+---
+
+## 🔧 Deployment & Maintenance
+
+### Update a Lambda Function
+1. AWS Console → Lambda → (Function Name)
+2. Code tab → Upload new code
+3. Click **Deploy**
+
+### Update Lambda Configuration
+- Configuration → Environment Variables → Edit
+- Adjust timeout settings if needed
+- Handler: `handler.lambda_handler`
+
+### Test the API
+```bash
+curl "https://yy7g8joeug.execute-api.us-east-1.amazonaws.com/narrative?region_id=los_angeles"
+```
 
 ---
 
 ## 📜 Guardrails & Ethics
 
 - ✅ Narratives **must** include *why* (data → explanation)
-- ✅ Include confidence scores and source provenance
-- ✅ Refuse to narrate if data is stale or confidence < threshold
-- ✅ All data transformations are auditable and reversible
+- ✅ Include source provenance from real APIs
+- ✅ All data transformations are auditable
+- ✅ Self-healing ensures completeness
 
 ---
 
 ## 📝 License
 
 MIT — see `LICENSE` file.
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Please ensure:
-- All tests pass: `pytest`
-- Code is formatted: `black .`
-- Linting passes: `flake8`
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Please ensure:
-- **Frontend**: TypeScript builds without errors, components follow accessibility best practices
-- **Backend**: All tests pass (`pytest`), code is formatted (`black .`), linting passes (`flake8`)
-- **Documentation**: Update README for new features
 
 ---
 

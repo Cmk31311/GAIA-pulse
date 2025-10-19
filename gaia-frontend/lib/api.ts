@@ -236,19 +236,28 @@ export function isEmptyValue(value: any): boolean {
 export function cleanNarrative(narrative: string): string {
   if (!narrative) return '';
   
-  return narrative
+  let cleaned = narrative
     // Remove paragraph tags like <Paragraph 1>, </Paragraph 1>, etc.
-    .replace(/<Paragraph \d+>/g, '')
-    .replace(/<\/Paragraph \d+>/g, '')
+    .replace(/<Paragraph \d+>/gi, '')
+    .replace(/<\/Paragraph \d+>/gi, '')
     // Remove any other XML-like tags
-    .replace(/<[^>]+>/g, '')
-    // Clean up extra whitespace and newlines
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-    .join('\n\n')
-    // Remove leading/trailing whitespace
-    .trim();
+    .replace(/<[^>]+>/g, '');
+  
+  // Split into lines and filter out meta-commentary lines
+  const lines = cleaned.split('\n').map(line => line.trim());
+  const filteredLines = lines.filter(line => {
+    const lower = line.toLowerCase();
+    // Remove any line that contains meta-commentary patterns
+    if (lower.match(/^here (?:is|are) (?:a |an )?[\d-]+ paragraph/)) return false;
+    if (lower.match(/^here (?:is|are) (?:a |an )?(?:response|narrative)/)) return false;
+    if (lower.match(/from the perspective of/)) return false;
+    if (lower.match(/^here (?:is|are) .+? response/)) return false;
+    if (lower.match(/^here's (?:a |an )?[\d-]+ paragraph/)) return false;
+    if (lower.match(/^\[.+?\]$/)) return false; // Remove lines like [end] or [note]
+    return line.length > 0;
+  });
+  
+  return filteredLines.join('\n\n').trim();
 }
 
 /**

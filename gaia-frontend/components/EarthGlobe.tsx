@@ -148,10 +148,10 @@ export default function EarthGlobe({ selectedRegion, onRegionClick }: EarthGlobe
         labelLat={(d: any) => d.lat}
         labelLng={(d: any) => d.lon}
         labelText={(d: any) => d.name}
-        labelSize={1.2}
-        labelDotRadius={0.6}
-        labelColor={(d: any) => getCategoryColor(d.category)}
-        labelResolution={3}
+        labelSize={1.3}
+        labelDotRadius={0.7}
+        labelColor={(d: any) => d.id === 'greenland_ice_sheet' ? '#00ff00' : '#ffffff'}
+        labelResolution={2}
         
         // Points for regions
         pointsData={REGION_COORDINATES}
