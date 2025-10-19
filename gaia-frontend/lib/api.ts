@@ -230,6 +230,28 @@ export function isEmptyValue(value: any): boolean {
 }
 
 /**
+ * Clean and format narrative text
+ * Removes paragraph tags and formatting artifacts from AI-generated text
+ */
+export function cleanNarrative(narrative: string): string {
+  if (!narrative) return '';
+  
+  return narrative
+    // Remove paragraph tags like <Paragraph 1>, </Paragraph 1>, etc.
+    .replace(/<Paragraph \d+>/g, '')
+    .replace(/<\/Paragraph \d+>/g, '')
+    // Remove any other XML-like tags
+    .replace(/<[^>]+>/g, '')
+    // Clean up extra whitespace and newlines
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .join('\n\n')
+    // Remove leading/trailing whitespace
+    .trim();
+}
+
+/**
  * Format metric name to display name
  */
 export function formatMetricName(key: string): string {

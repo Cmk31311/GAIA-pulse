@@ -11,6 +11,7 @@ import {
   formatMetricValue,
   formatMetricName,
   isEmptyValue,
+  cleanNarrative,
   type NarrativeResponse,
 } from "@/lib/api";
 import { fetchLiveWeather } from "@/lib/weather";
@@ -218,7 +219,9 @@ export default function GaiaDashboard() {
                   {/* Narrative Content */}
                   <div className="space-y-6">
                     {(() => {
-                      const paragraphs = (data.narrative || 'No narrative available.').split('\n\n').filter(p => p.trim());
+                      // Clean the narrative text to remove paragraph tags and formatting artifacts
+                      const cleanedNarrative = cleanNarrative(data.narrative || 'No narrative available.');
+                      const paragraphs = cleanedNarrative.split('\n\n').filter(p => p.trim());
                       const sections: { title: string; icon: string; paragraphs: string[] }[] = [];
                       let currentSection: { title: string; icon: string; paragraphs: string[] } | null = null;
                       
