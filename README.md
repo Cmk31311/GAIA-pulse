@@ -9,6 +9,8 @@ An interactive Earth monitoring platform built for the AWS AI Agent Global Hacka
 
 ![GAIA PULSE Dashboard](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js) ![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python) ![AWS](https://img.shields.io/badge/AWS-Lambda-orange?logo=amazon-aws) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript) ![React](https://img.shields.io/badge/React-19-61dafb?logo=react)
 
+🌐 Live Demo: https://gaia-pulse-3.vercel.app
+
 ## ✨ Key Features
 
 🌍 **Interactive 3D Globe** - Explore 22 regions across forests, oceans, deserts, mountains, cities, ice caps, and coral reefs
