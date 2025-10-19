@@ -123,7 +123,7 @@ export default function GaiaDashboard() {
 
         {/* Controls */}
         <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-6 mb-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-end justify-between gap-4">
             <div className="flex-1">
               <label htmlFor="region-select" className="block text-sm font-semibold text-cyan-200 mb-3 tracking-wide uppercase">
                 Select Region
@@ -142,15 +142,13 @@ export default function GaiaDashboard() {
                 ))}
               </select>
             </div>
-            <div className="flex items-end">
-              <button
-                onClick={() => loadData(region)}
-                disabled={loading}
-                className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold px-8 py-3 rounded-xl transition-all shadow-lg hover:shadow-cyan-500/50 hover:scale-105 disabled:cursor-not-allowed disabled:scale-100"
-              >
-                {loading ? '⏳ Loading...' : '🔄 Refresh'}
-              </button>
-            </div>
+            <button
+              onClick={() => loadData(region)}
+              disabled={loading}
+              className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold px-8 py-3 rounded-xl transition-all shadow-lg hover:shadow-cyan-500/50 hover:scale-105 disabled:cursor-not-allowed disabled:scale-100 whitespace-nowrap"
+            >
+              {loading ? '⏳ Loading...' : '🔄 Refresh'}
+            </button>
           </div>
         </div>
 

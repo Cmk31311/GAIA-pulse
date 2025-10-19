@@ -160,14 +160,18 @@ export const AVAILABLE_REGIONS = [
 /**
  * Format timestamp for display
  */
-export function formatTimestamp(ts: string): string {
+export function formatTimestamp(ts: string | null | undefined): string {
+  if (!ts) return 'No timestamp available';
   try {
-    return new Date(ts).toLocaleString('en-US', {
+    const date = new Date(ts);
+    if (isNaN(date.getTime())) return 'Invalid timestamp';
+    return date.toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      timeZoneName: 'short'
     });
   } catch {
     return ts;
