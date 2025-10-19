@@ -1,10 +1,11 @@
+# 🏆 AWS AI Agent Global Hackathon
+
 # GAIA PULSE — The Planet Writes Back
 
 **Tagline:** *The Earth itself, speaking through data.*
 
-An interactive Earth monitoring platform that transforms environmental data into AI-generated narratives. Explore 22 global regions through a 3D globe visualization and hear the planet's voice through real-time data storytelling.
+An interactive Earth monitoring platform built for the AWS AI Agent Global Hackathon that transforms environmental data into AI-generated narratives. Explore 22 global regions through a 3D globe visualization and hear the planet's voice through real-time data storytelling.
 
-> *"I am the coral reef off Sumatra. Heat presses on me because SST anomaly is 1.8°C; the air from the coast is harsh because PM2.5 is 60 µg/m³."*
 
 ![GAIA PULSE Dashboard](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js) ![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python) ![AWS](https://img.shields.io/badge/AWS-Lambda-orange?logo=amazon-aws) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript) ![React](https://img.shields.io/badge/React-19-61dafb?logo=react)
 
@@ -175,7 +176,7 @@ amazon_rainforest, andes_mountains, antarctica_coast, arabian_desert, arctic_cir
 
 🌐 **Live Demo**: [https://gaia-pulse-3.vercel.app](https://gaia-pulse-3.vercel.app)
 
-The actual working system is deployed from our private repository with real AWS resources. In production environments, these should be:
+The actual working system is deployed from my private repository with real AWS resources. In production environments, these should be:
 
 - Stored as environment variables
 - Kept in private repositories  
